@@ -37,7 +37,7 @@ current_version() {
 }
 
 version_is_tagged(){
-    local version = "$1"
+    local version="$1"
     # e.g., verion = 0.1.0
     # check if git tag -l v0.1.0 exists
     tag_description=$(git tag -l v"$version")
