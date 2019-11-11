@@ -17,7 +17,7 @@ from configure_with_sudo import GenericConfigure
 
 class InstallPip(GenericConfigure):
 
-    def __init__(self, user="root", kill_sudo_cred=True):
+    def __init__(self, kill_sudo_cred=True):
         # Initial argv is simply to check if 'pip' is installed
         argv = ["/usr/local/bin/pip", "-V"]
         super(InstallPip, self).__init__(
@@ -36,4 +36,21 @@ class InstallPip(GenericConfigure):
 
 pip_installer = InstallPip()
 pip_installer.execute()
+```
+
+The following example will capture the output of `sudo ls -l /private/var/root`, and print it line-by-line:
+
+```Python
+class DirectoryLister(GenericConfigure):
+
+    def __init__(self, path):
+        argv = ["ls", "-l", path]
+        super().__init__(argv, use_sudo=True)
+
+path = "/private/var/root"
+lister = DirectoryLister(path)
+output = lister.execute(return_output=True)
+
+for line in output:
+    print(line)
 ```
