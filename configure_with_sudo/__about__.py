@@ -1,5 +1,5 @@
 __title__ = "configure_with_sudo"
-__version__ = "0.1.0.dev0"
+__version__ = "0.1.0.dev1"
 __summary__ = "A Python class to handle executing system commands using sudo"
 
 """
