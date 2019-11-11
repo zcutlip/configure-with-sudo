@@ -39,6 +39,6 @@ ls -1 dist/"$PROJECT_NAME"-$version.*
 
 if prompt_yes_no;
 then
-    python3 -m twine upload/dist/"$PROJECT_NAME"-$version.*
+    python3 -m twine upload dist/"$PROJECT_NAME"-$version.*
 fi
 
