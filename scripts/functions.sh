@@ -15,9 +15,9 @@ branch_is_master(){
     local branch=$(git rev-parse --abbrev-ref HEAD)
     if [ $branch == "master" ];
     then
-        return SUCCESS;
+        return $SUCCESS;
     else
-        return FAILURE;
+        return $FAILURE;
     fi
 }
 
@@ -25,9 +25,9 @@ branch_is_clean(){
     local modified=$(git ls-files -m) || quit "Unable to check for modified files." $?
     if [ -z "$modified" ];
     then
-        return SUCCESS;
+        return $SUCCESS;
     else
-        return FAILURE;
+        return $FAILURE;
     fi
 }
 
@@ -43,9 +43,9 @@ version_is_tagged(){
     tag_description=$(git tag -l v"$version")
     if [ ! -z "$tag_description" ];
     then
-        return SUCCESS;
+        return $SUCCESS;
     else
-        return FAILURE;
+        return $FAILURE;
     fi
 }
 
