@@ -11,7 +11,7 @@ class ConfigureUsingExec(object):
 
         self.argv = argv
 
-    def go(self, argv=[], return_output=False):
+    def go(self, argv=[], return_output=False, encoding="utf-8"):
         runstring = ""
         if not argv or len(argv) == 0:
             argv = self.argv
@@ -25,7 +25,7 @@ class ConfigureUsingExec(object):
             if return_output:
                 output = subprocess.check_output(argv)
                 if output:
-                    output = output.splitlines()
+                    output = [line.decode(encoding) for line in output.splitlines()]
             else:
                 subprocess.check_call(argv)
 
@@ -57,9 +57,9 @@ class ConfigureUsingSudo(ConfigureUsingExec):
         print("Killing sudo credential.")
         subprocess.check_call([self.sudo_path, "-K"])
 
-    def sudo(self, return_output=False, sudo_set_home=False):
+    def sudo(self, return_output=False, sudo_set_home=False, encoding="utf-8"):
         sudo_argv = [self.sudo_path]
-
+        out = None
         if sudo_set_home:
             sudo_argv += ["-H"]
 
@@ -68,7 +68,7 @@ class ConfigureUsingSudo(ConfigureUsingExec):
         sudo_argv += self.argv
 
         try:
-            self.go(sudo_argv, return_output=return_output)
+            out = self.go(sudo_argv, return_output=return_output, encoding=encoding)
         except Exception:
             if self.kill_sudo_cred:
                 self.sudo_kill()
@@ -76,6 +76,7 @@ class ConfigureUsingSudo(ConfigureUsingExec):
 
         if self.kill_sudo_cred:
             self.sudo_kill()
+        return out
 
 
 class GenericConfigure(ConfigureUsingSudo):
@@ -100,7 +101,7 @@ class GenericConfigure(ConfigureUsingSudo):
         self.use_sudo = use_sudo
         self.sudo_set_home = sudo_set_home
 
-    def execute(self, use_sudo=None, return_output=False, set_configured=True, sudo_set_home=None):
+    def execute(self, use_sudo=None, return_output=False, set_configured=True, sudo_set_home=None, encoding="utf-8"):
         """
         Execute self.argv, optionally using sudo
 
@@ -128,9 +129,9 @@ class GenericConfigure(ConfigureUsingSudo):
                 use_sudo = self.use_sudo
             if use_sudo:
                 out = self.sudo(return_output=return_output,
-                                sudo_set_home=sudo_set_home)
+                                sudo_set_home=sudo_set_home, encoding=encoding)
             else:
-                out = self.go(return_output=return_output)
+                out = self.go(return_output=return_output, encoding=encoding)
         if set_configured:
             self.configured = True
         return out
