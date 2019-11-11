@@ -1,35 +1,24 @@
-#!/bin/sh
+#!/bin/sh -x
 
-quit(){
-    if [ $# -gt 1 ];
-    then
-        echo $1
-        shift
-    fi
-    exit $1
-}
+source "$(dirname $0)"/functions.sh
 
-branch=$(git rev-parse --abbrev-ref HEAD)
-if [ ! $branch == "master" ];
+if ! branch_is_master;
 then
-    echo 
     quit "Attempting to tag from branch $branch. Check out 'master' first." 1
 fi
 
-modified=$(git ls-files -m) || quit "Unable to check for modified files." $?
 
-if [ ! -z "$modified" ];
+
+if ! branch_is_clean;
 then
     echo "Tree contains uncommitted modifications:"
     git ls-files -m
     quit 1
 fi
 
-version="v$(python ./setup.py --version)" || quit "Unable to detect package version" $?
+version=current_version;
 
-existing_version=$(git tag -l "$version")
-
-if [ ! -z "$existing_version" ];
+if version_is_tagged "$version";
 then
     echo "Version $version already tagged."
     git tag -l
@@ -37,7 +26,7 @@ then
 fi
 
 echo "Tagging version: $version"
-
+exit 1
 git tag -a "$version" -m "version $version" || quit "Failed to tag $version" $?
 
 echo "Tags:"
