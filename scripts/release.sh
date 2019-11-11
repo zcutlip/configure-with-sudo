@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 DIRNAME="$(dirname $0)"
 
 # set PROJECT_NAME variable
@@ -18,6 +18,7 @@ then
     git ls-files -m
     quit 1
 fi
+version=$(current_version);
 
 if ! version_is_tagged "$version";
 then

@@ -16,7 +16,7 @@ then
     quit 1
 fi
 
-version=current_version;
+version=$(current_version);
 
 if version_is_tagged "$version";
 then
