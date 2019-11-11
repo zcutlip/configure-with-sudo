@@ -2,7 +2,7 @@
 
 ## Description
 
-A Python class to handle executing system commands using sudo.
+A Python module to handle executing system commands using sudo.
 
 ## Usage
 
