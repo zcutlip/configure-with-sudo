@@ -33,6 +33,7 @@ generate_dist(){
 
 version=$(current_version);
 
+generate_dist;
 echo "About to post the following distribution files to pypi.org."
 ls -1 dist/"$PROJECT_NAME"-$version.*
 
