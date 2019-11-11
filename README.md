@@ -6,11 +6,11 @@ A Python module to handle executing system commands using sudo.
 
 ## Usage
 
-Extend `GenericConfigure`, setting, at a minimum, an appropriate `argv` command & argument list.
+Extend `GenericConfigure`, setting at a minimum an appropriate `argv` command & argument list.
 
 ## Example
 
-The following class will install `pip` system-wide if it isn't already installed:
+The following class will check if `pip` is installed and, if not, install it system-wide using `sudo easy_install pip`:
 
 ```Python
 from configure_with_sudo import GenericConfigure
