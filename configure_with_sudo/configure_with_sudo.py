@@ -112,6 +112,7 @@ class GenericConfigure(ConfigureUsingSudo):
         - set_configured: Whether to mark this object as if the command executes without raising an exception
                           Objects marked configured can safely have 'execute()' called and will not run.
         - sudo_set_home: Override object's 'sudo_set_home' flag.
+        - encoding: Optional unicode encoding to apply when decoding output. Defaults to "utf-8"
 
         Returns:
         - A list of output strings split on line breaks, or None if return_output=False
