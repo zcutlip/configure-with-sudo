@@ -26,7 +26,7 @@ then
 fi
 
 echo "Tagging version: $version"
-exit 1
+
 git tag -a "$version" -m "version $version" || quit "Failed to tag $version" $?
 
 echo "Tags:"
