@@ -19,7 +19,7 @@ then
     quit 1
 fi
 
-fi ! version_is_tagged "$version";
+if ! version_is_tagged "$version";
 then
     echo "Current version $version isn't tagged."
     echo "Attempting to tag..."
