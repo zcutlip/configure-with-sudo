@@ -87,7 +87,7 @@ class GenericConfigure(ConfigureUsingSudo):
         Params:
         - argv: System configuration command/argument list that will be passed to subprocess
         - use_sudo: Whether to use 'sudo' to execute the command. If false, the command is run
-                    as the current user.
+                    as the current user. Defaults to False.
         - kill_sudo_cred: Optionally kill the sudo credential using 'sudo -k' immediately afterwards
         - sudo_user: Optional name of the user to sudo to using 'sudo -u <user>'. Defaults to 'root'
         - sudo_set_home: Optionally set the HOME variable to the sudo user's home directory using 'sudo -H'
