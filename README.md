@@ -14,6 +14,7 @@ The following class will install `pip` system-wide if it isn't already installed
 
 ```Python
 from configure_with_sudo import GenericConfigure
+
 class InstallPip(GenericConfigure):
 
     def __init__(self, user="root", kill_sudo_cred=True):
