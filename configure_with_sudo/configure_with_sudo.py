@@ -1,7 +1,8 @@
 from __future__ import print_function
-import os
-import subprocess
 
+import os
+import shlex
+import subprocess
 
 DEFAULT_SUDO_PATH = os.path.join(os.sep, "usr", "bin", "sudo")
 
@@ -13,11 +14,10 @@ class ConfigureUsingExec(object):
 
     def go(self, argv=[], return_output=False, encoding="utf-8"):
         runstring = ""
-        if not argv or len(argv) == 0:
+        if not argv:
             argv = self.argv
 
-        for arg in argv:
-            runstring += "%s " % arg
+        runstring = self.runstring(argv=argv)
         print("about to run: %s" % runstring)
         output = None
 
@@ -35,14 +35,20 @@ class ConfigureUsingExec(object):
             raise
         return output
 
-    def __str__(self):
+    def runstring(self, argv=None):
         runstring = ""
-        if not self.argv:
-            runstring = "[no command]"
-        else:
-            for arg in self.argv:
-                runstring += "{} ".format(arg)
-        runstring.rstrip()
+        if not argv:
+            argv = self.argv
+        if argv:
+            argv = [shlex.quote(arg) for arg in argv]
+            runstring = " ".join(argv)
+            runstring = runstring.rstrip()
+        return runstring
+
+    def __str__(self):
+        runstring = self.runstring()
+        if not runstring:
+            runstring = self.TITLE
         return runstring
 
 
