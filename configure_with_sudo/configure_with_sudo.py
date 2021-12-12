@@ -53,7 +53,9 @@ class ConfigureUsingExec(object):
 
 
 class ConfigureUsingSudo(ConfigureUsingExec):
-    def __init__(self, argv, kill_sudo_cred=True, sudo_user="root", sudo_path=DEFAULT_SUDO_PATH):
+    def __init__(
+        self, argv, kill_sudo_cred=True, sudo_user="root", sudo_path=DEFAULT_SUDO_PATH
+    ):
         super(ConfigureUsingSudo, self).__init__(argv)
         self.kill_sudo_cred = kill_sudo_cred
         self.sudo_user = sudo_user
@@ -86,7 +88,15 @@ class ConfigureUsingSudo(ConfigureUsingExec):
 
 
 class GenericConfigure(ConfigureUsingSudo):
-    def __init__(self, argv, use_sudo=False, kill_sudo_cred=True, sudo_user="root", sudo_set_home=False, sudo_path=DEFAULT_SUDO_PATH):
+    def __init__(
+        self,
+        argv,
+        use_sudo=False,
+        kill_sudo_cred=True,
+        sudo_user="root",
+        sudo_set_home=False,
+        sudo_path=DEFAULT_SUDO_PATH,
+    ):
         """
         A generic system configuration object that optionally uses sudo.
         The configured command is not executed until the 'execute()' method is called.
@@ -102,12 +112,23 @@ class GenericConfigure(ConfigureUsingSudo):
 
         """
         super(GenericConfigure, self).__init__(
-            argv, kill_sudo_cred=kill_sudo_cred, sudo_user=sudo_user, sudo_path=sudo_path)
+            argv,
+            kill_sudo_cred=kill_sudo_cred,
+            sudo_user=sudo_user,
+            sudo_path=sudo_path,
+        )
         self.configured = False
         self.use_sudo = use_sudo
         self.sudo_set_home = sudo_set_home
 
-    def execute(self, use_sudo=None, return_output=False, set_configured=True, sudo_set_home=None, encoding="utf-8"):
+    def execute(
+        self,
+        use_sudo=None,
+        return_output=False,
+        set_configured=True,
+        sudo_set_home=None,
+        encoding="utf-8",
+    ):
         """
         Execute self.argv, optionally using sudo
 
@@ -135,8 +156,11 @@ class GenericConfigure(ConfigureUsingSudo):
             if use_sudo is None:
                 use_sudo = self.use_sudo
             if use_sudo:
-                out = self.sudo(return_output=return_output,
-                                sudo_set_home=sudo_set_home, encoding=encoding)
+                out = self.sudo(
+                    return_output=return_output,
+                    sudo_set_home=sudo_set_home,
+                    encoding=encoding,
+                )
             else:
                 out = self.go(return_output=return_output, encoding=encoding)
         if set_configured:
