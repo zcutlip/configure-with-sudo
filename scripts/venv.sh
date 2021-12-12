@@ -14,4 +14,4 @@ then
     . ~/.dotfiles/virtualenvwrapperrc
 fi
 
-mkvirtualenv -r ./venv-reqs.txt "configure_with_sudo" || quit "Unable to make virtual environment." 1
+mkvirtualenv -r ./dev-reqs.txt "configure_with_sudo" || quit "Unable to make virtual environment." 1
