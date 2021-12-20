@@ -170,3 +170,11 @@ class GenericConfigure(ConfigureUsingSudo):
         if set_configured:
             self.configured = True
         return out
+
+    def __str__(self):
+        if self.use_sudo:
+            argv = self.sudo_argv(sudo_set_home=self.sudo_set_home)
+        else:
+            argv = self.argv
+        runstring = self.runstring(argv=argv)
+        return runstring
