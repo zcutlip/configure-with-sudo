@@ -65,16 +65,20 @@ class ConfigureUsingSudo(ConfigureUsingExec):
         print("Killing sudo credential.")
         subprocess.check_call([self.sudo_path, "-K"])
 
-    def sudo(self, return_output=False, sudo_set_home=False, encoding="utf-8"):
+    def sudo_argv(self, sudo_set_home=False):
         sudo_argv = [self.sudo_path]
-        out = None
+
         if sudo_set_home:
             sudo_argv += ["-H"]
 
         if not self.sudo_user == "root":
             sudo_argv += ["-u", self.sudo_user]
         sudo_argv += self.argv
+        return sudo_argv
 
+    def sudo(self, return_output=False, sudo_set_home=False, encoding="utf-8"):
+        sudo_argv = self.sudo_argv(sudo_set_home=sudo_set_home)
+        out = None
         try:
             out = self.go(sudo_argv, return_output=return_output, encoding=encoding)
         except Exception:
