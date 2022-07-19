@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import logging
 import os
 import shlex
 import subprocess
@@ -8,8 +9,11 @@ DEFAULT_SUDO_PATH = os.path.join(os.sep, "usr", "bin", "sudo")
 
 
 class ConfigureUsingExec(object):
-    def __init__(self, argv):
-
+    def __init__(self, argv, logger=None):
+        if not logger:
+            logging.basicConfig(level=logging.INFO)
+            logger = logging.getLogger()
+        self.logger = logger
         self.argv = argv
 
     def go(self, argv=[], return_output=False, encoding="utf-8"):
@@ -18,7 +22,7 @@ class ConfigureUsingExec(object):
             argv = self.argv
 
         runstring = self.runstring(argv=argv)
-        print("about to run: %s" % runstring)
+        self.logger.debug("about to run: %s" % runstring)
         output = None
 
         try:
@@ -30,8 +34,8 @@ class ConfigureUsingExec(object):
                 subprocess.check_call(argv)
 
         except Exception as e:
-            print("Failed to run command: %s" % runstring)
-            print(str(e))
+            self.logger.fatal("Failed to run command: %s" % runstring)
+            self.logger.fatal(str(e))
             raise
         return output
 
@@ -54,15 +58,20 @@ class ConfigureUsingExec(object):
 
 class ConfigureUsingSudo(ConfigureUsingExec):
     def __init__(
-        self, argv, kill_sudo_cred=True, sudo_user="root", sudo_path=DEFAULT_SUDO_PATH
+        self,
+        argv,
+        logger=None,
+        kill_sudo_cred=True,
+        sudo_user="root",
+        sudo_path=DEFAULT_SUDO_PATH,
     ):
-        super(ConfigureUsingSudo, self).__init__(argv)
+        super(ConfigureUsingSudo, self).__init__(argv, logger=logger)
         self.kill_sudo_cred = kill_sudo_cred
         self.sudo_user = sudo_user
         self.sudo_path = sudo_path
 
     def sudo_kill(self):
-        print("Killing sudo credential.")
+        self.logger.info("Killing sudo credential.")
         subprocess.check_call([self.sudo_path, "-K"])
 
     def sudo_argv(self, sudo_set_home=False):
@@ -95,6 +104,7 @@ class GenericConfigure(ConfigureUsingSudo):
     def __init__(
         self,
         argv,
+        logger=None,
         use_sudo=False,
         kill_sudo_cred=True,
         sudo_user="root",
@@ -117,6 +127,7 @@ class GenericConfigure(ConfigureUsingSudo):
         """
         super(GenericConfigure, self).__init__(
             argv,
+            logger=logger,
             kill_sudo_cred=kill_sudo_cred,
             sudo_user=sudo_user,
             sudo_path=sudo_path,
