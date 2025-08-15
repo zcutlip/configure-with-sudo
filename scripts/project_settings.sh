@@ -17,4 +17,4 @@
 
 # Either don't set, or set to "1" to enable
 # if set at all and not set to "1" twine upload will not happen
-TWINE_UPLOAD_ENABLED="0"
+TWINE_UPLOAD_ENABLED="1"
