@@ -1,7 +1,11 @@
-flake8
 autopep8
+build
+colored-traceback
+flake8
+ipython
+mypy
 pycodestyle
-bpython
-nose
--r requirements.txt
+pytest
+setuptools
+twine
 -e .
