@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "configure_with_sudo"
+dynamic = ["version"]
+description = "A Python class to handle executing system commands using sudo"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+    {name = "Zachary Cutlip", email = "uid000@gmail.com"}
+]
+urls = {Homepage = "https://github.com/zcutlip/configure-with-sudo"}
+dependencies = []
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+# version.attr = "configure_with_sudo.__about__.__version__"
+version = {attr = "configure_with_sudo.__about__.__version__"}  # any module attribute compatible with ast.literal_eval
+# readme = {file = ["README.md", "README.rst", "USAGE.rst"]}
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["configure_with_sudo*"]
+
+[tool.setuptools.package-data]
+configure_with_sudo = ["config/*"]
