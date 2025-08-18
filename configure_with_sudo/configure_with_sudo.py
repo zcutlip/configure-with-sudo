@@ -21,10 +21,17 @@ class ConfigureUsingExec:
         self.logger.debug("Waiting for job.")
 
         if self.process:
-            ret = self.process.wait()
+            # process.communicate() will block until the process terminates
+            # even if we're not capturing output
+            # if we didn't capture output, stderr & stdout will be None
             output, err_output = self.process.communicate()
-            output = output.decode(encoding)
-            err_output = err_output.decode(encoding)
+            # we don't get here unless the process terminated,
+            # so poll() won't block. It just returns the exit status.
+            ret = self.process.poll()
+            if output is not None:
+                output = output.decode(encoding)
+            if err_output is not None:
+                err_output = err_output.decode(encoding)
         else:
             self.logger.debug("No process to wait for")
 
