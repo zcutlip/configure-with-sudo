@@ -78,29 +78,23 @@ class ConfigureUsingExec:
                 output_lines.append(line)
         return output_lines
 
-    def go(self, argv=[], return_output=False, encoding="utf-8"):
-        runstring = ""
-        if not argv:
-            argv = self.argv
+    def go_wait(self, argv=None, return_output=False, encoding="utf-8"):
+        ret, stdout, stderr = self._run_command(argv=argv,
+                                                capture_out=return_output,
+                                                capture_err=False,
+                                                err_to_out=False,
+                                                dry_run=False,
+                                                wait=True,
+                                                encoding=encoding)
+        if ret != 0:
+            print(stdout)
+            print(stderr)
+            # emulate subprocess.check_output()/check_call() like we used to call
+            raise subprocess.CalledProcessError(
+                ret, self.process.args, output=stdout, stderr=stderr)
 
-        runstring = self.runstring(argv=argv)
-        self.logger.debug("about to run: %s" % runstring)
-        output = None
-
-        try:
-            if return_output:
-                output = subprocess.check_output(argv)
-                if output:
-                    output = [line.decode(encoding)
-                              for line in output.splitlines()]
-            else:
-                subprocess.check_call(argv)
-
-        except Exception as e:
-            self.logger.fatal("Failed to run command: %s" % runstring)
-            self.logger.fatal(str(e))
-            raise
-        return output
+        output_lines = self.output_lines(stdout)
+        return output_lines
 
     def runstring(self, argv=None):
         runstring = ""
@@ -152,8 +146,8 @@ class ConfigureUsingSudo(ConfigureUsingExec):
         sudo_argv = self.sudo_argv(sudo_set_home=sudo_set_home)
         out = None
         try:
-            out = self.go(sudo_argv, return_output=return_output,
-                          encoding=encoding)
+            out = self.go_wait(sudo_argv, return_output=return_output,
+                               encoding=encoding)
         except Exception:
             if self.kill_sudo_cred:
                 self.sudo_kill()
@@ -241,7 +235,7 @@ class GenericConfigure(ConfigureUsingSudo):
                     encoding=encoding,
                 )
             else:
-                out = self.go(
+                out = self.go_wait(
                     return_output=return_output, encoding=encoding)
         if set_configured:
             self.configured = True
