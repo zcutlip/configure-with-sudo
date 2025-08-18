@@ -30,15 +30,15 @@ class ConfigureUsingExec:
 
         return (ret, output, err_output)
 
-    def _run_command(self,
-                     argv: list[str] = None,
-                     capture_out: bool = False,
-                     capture_err: bool = False,
-                     err_to_out: bool = False,
-                     dry_run: bool = True,
-                     wait: bool = False,
-                     encoding: str = "utf-8"
-                     ) -> tuple[int | None, str | None, str | None]:
+    def go(self,
+           argv: list[str] = None,
+           capture_out: bool = False,
+           capture_err: bool = False,
+           err_to_out: bool = False,
+           dry_run: bool = True,
+           wait: bool = False,
+           encoding: str = "utf-8"
+           ) -> tuple[int | None, str | None, str | None]:
         if not argv:
             argv = self.argv
         ret = None
@@ -79,13 +79,13 @@ class ConfigureUsingExec:
         return output_lines
 
     def go_wait(self, argv=None, return_output=False, encoding="utf-8"):
-        ret, stdout, stderr = self._run_command(argv=argv,
-                                                capture_out=return_output,
-                                                capture_err=False,
-                                                err_to_out=False,
-                                                dry_run=False,
-                                                wait=True,
-                                                encoding=encoding)
+        ret, stdout, stderr = self.go(argv=argv,
+                                      capture_out=return_output,
+                                      capture_err=False,
+                                      err_to_out=False,
+                                      dry_run=False,
+                                      wait=True,
+                                      encoding=encoding)
         if ret != 0:
             print(stdout)
             print(stderr)
