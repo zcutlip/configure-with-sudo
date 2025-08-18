@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import logging
 import os
 import shlex
@@ -8,13 +6,77 @@ import subprocess
 DEFAULT_SUDO_PATH = os.path.join(os.sep, "usr", "bin", "sudo")
 
 
-class ConfigureUsingExec(object):
+class ConfigureUsingExec:
     def __init__(self, argv, logger=None):
         if not logger:
             logging.basicConfig(level=logging.INFO)
             logger = logging.getLogger()
         self.logger = logger
         self.argv = argv
+
+    def wait(self, encoding: str = "utf-8") -> tuple[int, str, str]:
+        ret: int = None
+        output: bytes = None
+        err_output: bytes = None
+        self.logger.debug("Waiting for job.")
+
+        if self.process:
+            ret = self.process.wait()
+            output, err_output = self.process.communicate()
+            output = output.decode(encoding)
+            err_output = err_output.decode(encoding)
+        else:
+            self.logger.debug("No process to wait for")
+
+        return (ret, output, err_output)
+
+    def _run_command(self,
+                     argv: list[str] = None,
+                     capture_out: bool = False,
+                     capture_err: bool = False,
+                     err_to_out: bool = False,
+                     dry_run: bool = True,
+                     wait: bool = False,
+                     encoding: str = "utf-8"
+                     ) -> tuple[int | None, str | None, str | None]:
+        if not argv:
+            argv = self.argv
+        ret = None
+        output = None
+        err_out = None
+        out_cap: int = None
+        err_cap = None
+        if capture_out:
+            out_cap = subprocess.PIPE
+        if err_to_out:
+            err_cap = subprocess.STDOUT
+        if capture_err and not err_to_out:
+            err_cap = subprocess.PIPE
+
+        self.logger.debug(f"Running: [{self.runstring(argv=argv)}]")
+
+        if dry_run:
+            self.logger.info("Dry run. Not running command")
+            self.process = None
+        else:
+            self.process = subprocess.Popen(
+                argv, stdout=out_cap, stderr=err_cap, bufsize=0
+            )
+            if wait:
+                ret, output, err_out = self.wait()
+
+        return (ret, output, err_out)
+
+    def output_lines(self, output: str | bytes, encoding: str = "utf-8") -> list[str]:
+        output_lines = []
+        if output is not None:
+            if isinstance(output, bytes):
+                output = output.decode(encoding)
+            _lines = output.splitlines()
+            for line in _lines:
+                line = line.rstrip()
+                output_lines.append(line)
+        return output_lines
 
     def go(self, argv=[], return_output=False, encoding="utf-8"):
         runstring = ""
@@ -29,7 +91,8 @@ class ConfigureUsingExec(object):
             if return_output:
                 output = subprocess.check_output(argv)
                 if output:
-                    output = [line.decode(encoding) for line in output.splitlines()]
+                    output = [line.decode(encoding)
+                              for line in output.splitlines()]
             else:
                 subprocess.check_call(argv)
 
@@ -65,7 +128,7 @@ class ConfigureUsingSudo(ConfigureUsingExec):
         sudo_user="root",
         sudo_path=DEFAULT_SUDO_PATH,
     ):
-        super(ConfigureUsingSudo, self).__init__(argv, logger=logger)
+        super().__init__(argv, logger=logger)
         self.kill_sudo_cred = kill_sudo_cred
         self.sudo_user = sudo_user
         self.sudo_path = sudo_path
@@ -89,7 +152,8 @@ class ConfigureUsingSudo(ConfigureUsingExec):
         sudo_argv = self.sudo_argv(sudo_set_home=sudo_set_home)
         out = None
         try:
-            out = self.go(sudo_argv, return_output=return_output, encoding=encoding)
+            out = self.go(sudo_argv, return_output=return_output,
+                          encoding=encoding)
         except Exception:
             if self.kill_sudo_cred:
                 self.sudo_kill()
@@ -125,7 +189,7 @@ class GenericConfigure(ConfigureUsingSudo):
         - sudo_path: Optional path to 'sudo'. Defaults to /usr/bin/sudo
 
         """
-        super(GenericConfigure, self).__init__(
+        super().__init__(
             argv,
             logger=logger,
             kill_sudo_cred=kill_sudo_cred,
@@ -177,7 +241,8 @@ class GenericConfigure(ConfigureUsingSudo):
                     encoding=encoding,
                 )
             else:
-                out = self.go(return_output=return_output, encoding=encoding)
+                out = self.go(
+                    return_output=return_output, encoding=encoding)
         if set_configured:
             self.configured = True
         return out
